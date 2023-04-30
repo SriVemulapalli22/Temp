@@ -3,8 +3,8 @@ project:
   source_files:
     - toplevel_chip.v
     - chip.sv
-    - mul.sv
-    - add.sv
+    - mul_16.sv
+    - add_16.sv
   top_module:  "toplevel_chip"
 
 # As everyone will have access to all designs, try to make it easy for someone new to your design to know what
