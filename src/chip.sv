@@ -25,7 +25,7 @@ module my_chip (
 
 assign select = io_in[8];
 
-    always @(posedge clock or posedge reset) begin
+    always @(posedge clock) begin
         if(reset) begin 
             tmp_input_a <= 0;
             tmp_input_b <= 0;
@@ -44,24 +44,8 @@ assign select = io_in[8];
                 count <= count +1; 
                 j <= (4*count) -1;
             end
-	    end
-    end
-    // Calling Adder and Multiplier Functions
-    add inst_add(
-        .input_a(value_A),
-        .input_b(value_B),
-        .add_valid(temp_valid_add), 
-        .add_out(temp_result_add)
-    );
+        end
 
-    mul inst_mul(
-        .input_a(value_A),
-        .input_b(value_B),
-        .mul_valid(temp_valid_mul),
-        .mul_out(temp_result_mul)
-    );
-
-    always @(posedge clock or posedge reset) begin 
         if(reset) begin
             i <= 0;
             io_out[8:0] <= 'h0;
@@ -90,6 +74,23 @@ assign select = io_in[8];
                 end
             endcase
         end
+    end
+  //Adder and Multiplier Functions
+    add inst_add(
+        .input_a(value_A),
+        .input_b(value_B),
+        .add_valid(temp_valid_add), 
+        .add_out(temp_result_add)
+    );
+
+    mul inst_mul(
+        .input_a(value_A),
+        .input_b(value_B),
+        .mul_valid(temp_valid_mul),
+        .mul_out(temp_result_mul)
+    );
+
+    always @(posedge clock or posedge reset) begin 
     end
 
 endmodule
