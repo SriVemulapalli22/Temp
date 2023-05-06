@@ -2,36 +2,35 @@
 `default_nettype none
 
 module mul(input_a, input_b, mul_out, mul_valid);
-  input reg [15:0] input_a, input_b;
-  output reg [15:0] mul_out;
-  output reg mul_valid;
-  reg mul_valid;
-  reg  overflow;
-  reg zero; 
-  reg NaN; 
+  input logic [15:0] input_a, input_b;
+  output logic [15:0] mul_out;
+  output logic mul_valid;
 
-  reg [4:0] expo_1, expo_2, expo_final;
-  reg [4:0] expo_1_temp, expo_2_temp, expo_final_temp; 
-  reg [4:0] expo_diff;
-  reg [4:0] temp1;
-  reg check_1;
-  reg [9:0] frac_1, frac_2, frac_final;
-  reg [9:0] frac_diff, frac_diff_final;
-  reg [20:0] temp_f_1;
-  reg [10:0] temp_f_2;
-  reg expo_sign;
-  reg [6:0] expo_temp1;
-  reg [5:0] expo_bias_1, expo_bias_final; 
-  reg [11:0] temp_4, temp_4_before; 
-  reg [9:0] frac_temp;
-  reg [9:0] dummy; 
-  reg [21:0] final_value;
-  reg [21:0] before_value;
-  reg [20:0] temp_value[10:0];
-  reg sign_1, sign_2, sign_final; 
-  reg is_inf; 
-  reg subnormal_value;
-  reg is_zero, check_zero;
+  logic  overflow;
+  logic zero; 
+  logic NaN; 
+  logic [4:0] expo_1, expo_2, expo_final;
+  logic [4:0] expo_1_temp, expo_2_temp, expo_final_temp; 
+  logic [4:0] expo_diff;
+  logic [4:0] temp1;
+  logic check_1;
+  logic [9:0] frac_1, frac_2, frac_final;
+  logic [9:0] frac_diff, frac_diff_final;
+  logic [20:0] temp_f_1;
+  logic [10:0] temp_f_2;
+  logic expo_sign;
+  logic [6:0] expo_temp1;
+  logic [5:0] expo_bias_1, expo_bias_final; 
+  logic [11:0] temp_4, temp_4_before; 
+  logic [9:0] frac_temp;
+  logic [9:0] dummy; 
+  logic [21:0] final_value;
+  logic [21:0] before_value;
+  logic [20:0] temp_value[10:0];
+  logic sign_1, sign_2, sign_final; 
+  logic is_inf; 
+  logic subnormal_value;
+  logic is_zero, check_zero;
 
 
   always @(*) begin 

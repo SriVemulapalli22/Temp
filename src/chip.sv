@@ -94,16 +94,6 @@ assign select = io_in[8];
             end
             endcase
         end
-        else begin // Reset everything to 0
-            tmp_input_A <= 0;
-            tmp_input_B <= 0;
-            count <= 1;
-            j <= 0;
-            i <= 0;
-            io_out[8:0] <= 'h0;
-            result <= 'h0;
-            valid  <= 'h0;
-        end
     end
   //Adder and Multiplier Modules
     add inst_add(

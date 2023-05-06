@@ -3,51 +3,49 @@
 
 module add(input_a, input_b, add_out,add_valid);
   //Ports
-  input reg [15:0] input_a, input_b;
-  output reg [15:0] add_out;
-  output reg add_valid;
-  reg overflow;
-  reg NaN; 
-  
-  reg [15:0] value_2, value_1; 
-  reg [4:0] exp_2, exp_1; 
-  reg [10:0] max_diff, min_diff; 
-  reg [10:0] sing_1, shift_1; 
-  reg [4:0] diff_expon; 
-  reg [9:0] shifted_value; 
-  reg [3:0] to_shift;
-  reg [9:0] shift_ext;
-  reg [9:0] shift_ext_1;
-  reg [9:0] dec_1, dec_2; 
-  reg [4:0] temp_1, temp_2,temp_3;
-  reg sign_2, sign_1;
-
-  reg [10:0] sum; 
-  reg sum_carry;
-  reg sign_equal;
-  reg if_zero_1;
-  reg if_inf; 
-
-  reg [4:0] temp_exp, temp_exp_v;
-  
-  assign overflow = ((&exp_2[4:1] & ~exp_2[0]) & sum_carry & sign_equal) | if_inf;
+  input logic [15:0] input_a, input_b; // Input Ports
+  output logic [15:0] add_out; // Output Ports
+  output logic add_valid; // Output Valid Signal
+ 
+  // Internal Logic Signals. 
+  logic [15:0] value_2, value_1; 
+  logic [4:0] exp_2, exp_1; 
+  logic [10:0] max_diff, min_diff; 
+  logic [10:0] sing_1, shift_1; 
+  logic [4:0] diff_expon; 
+  logic [9:0] shifted_value; 
+  logic [3:0] to_shift;
+  logic [9:0] shift_ext;
+  logic [9:0] shift_ext_1;
+  logic [9:0] dec_test, dec_1; 
+  logic [4:0] temp_1, temp_2,temp_3;
+  logic sign_2, sign_1;
+  logic overflow;
+  logic NaN; 
+  logic [10:0] sum; 
+  logic sum_carry;
+  logic sign_equal;
+  logic if_zero_1;
+  logic if_inf; 
+  logic [4:0] temp_exp, temp_exp_v;
   assign NaN = (&input_a[14:10] & |input_a[9:0]) | (&input_b[14:10] & |input_b[9:0]);
   assign if_inf = (&input_a[14:10] & ~|input_a[9:0]) | (&input_b[14:10] & ~|input_b[9:0]);
+  assign overflow = ((&exp_2[4:1] & ~exp_2[0]) & sum_carry & sign_equal) | if_inf;
   assign add_out[15] = sign_2; 
   assign temp_exp = exp_2 + {4'd0, (~if_zero_1 & sum_carry & sign_equal)} - {4'd0,({1'b0,add_out[9:0]} == sum)};
   assign temp_exp_v = (temp_3 | (to_shift == 4'd10)) ? 5'd0 : (~to_shift + exp_2 + 5'd1);
   assign add_out[14:10] = ((sign_equal) ? temp_exp : temp_exp_v) | {5{overflow}};
-  assign add_out[9:0] = ((if_zero_1) ? dec_1 : ((sign_equal) ? ((sum_carry) ? sum[10:1] : sum[9:0]) : ((temp_3) ? 10'd0 : shifted_value))) & {10{~overflow}};
+  assign add_out[9:0] = ((if_zero_1) ? dec_test : ((sign_equal) ? ((sum_carry) ? sum[10:1] : sum[9:0]) : ((temp_3) ? 10'd0 : shifted_value))) & {10{~overflow}};
 
-  assign {sign_2, temp_1, dec_1} = value_2;
-  assign {sign_1, temp_2, dec_2} = value_1;
+  assign {sign_2, temp_1, dec_test} = value_2;
+  assign {sign_1, temp_2, dec_1} = value_1;
   assign sign_equal = (sign_2 == sign_1);
-  assign if_zero_1 = ~(|exp_1 | |dec_2);
+  assign if_zero_1 = ~(|exp_1 | |dec_1);
   assign exp_2 = temp_1 + {4'd0, ~|temp_1};
   assign exp_1 = temp_2 + {4'd0, ~|temp_2};
 
-  assign max_diff = {|temp_1, dec_1};
-  assign min_diff = {|temp_2, dec_2};
+  assign max_diff = {|temp_1, dec_test};
+  assign min_diff = {|temp_2, dec_1};
   assign diff_expon = exp_2 - exp_1; 
   assign {sum_carry, sum} = sing_1 + max_diff; 
   assign shift_ext_1 = shift_ext;
@@ -129,7 +127,9 @@ module add(input_a, input_b, add_out,add_valid);
         5'h14: {shift_1,shift_ext} = min_diff[10:9];
         5'h15: {shift_1,shift_ext} = min_diff[10];
         5'h16: {shift_1,shift_ext} = 0;
-        default: shift_1 = min_diff;
+        default: begin shift_1 = 0;
+                       shift_ext = 0;
+        end
       endcase
     end
 
