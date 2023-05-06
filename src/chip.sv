@@ -47,12 +47,15 @@ assign select = io_in[8];
             tmp_input_B <= 0;
             count <= 1;
             j <= 0;
+            i <= 0;
+            io_out[8:0] <= 'h0;
+            result <= 'h0;
+            valid  <= 'h0;
         end
         // io_in[9] is an input signal which is enabled when the inputs are given. 
         else if (io_in[9]) begin
             // Assigning the stored inputs to the inputs to the adder/multiplier module.
             if(count == 6) begin
-                count <= 0;
                 value_A <= tmp_input_A;
                 value_B <= tmp_input_B;
             end
@@ -64,42 +67,42 @@ assign select = io_in[8];
                 j <= (4*count) -1;
             end
         end
-        else begin 
+        // Output Controls.
+        else if(!io_in[9]) begin
+            case(i) 
+            2'd0:	begin // Decides which result should be taken based on the select signal.
+                    result <=  select ? temp_result_add : temp_result_mul;
+                    valid <= select ? temp_valid_add : temp_valid_mul;
+                    i <= 2'd1;
+                end
+            2'd1:   begin // Assigns 8 bits starting from LSB to the output port
+                    io_out[7:0] <= result[7:0];
+                    io_out[8] <= valid;
+                    count <=1;
+                    i <= 2'd2;
+                end
+            2'd2:	begin // Assigning the next 8 bits to the output port.
+                    io_out[7:0] <= result[15:8];
+                    i <= 2'd3;
+                end
+            2'd3: begin // Idle State
+                i <= 2'd0;
+                io_out[8] <= 'h0;
+                end
+            default: begin i <= 2'd0;
+                        io_out[8] <= 'h0;
+            end
+            endcase
+        end
+        else begin // Reset everything to 0
             tmp_input_A <= 0;
             tmp_input_B <= 0;
             count <= 1;
             j <= 0;
-        end
-        // Output Controls.
-        if(reset) begin
             i <= 0;
             io_out[8:0] <= 'h0;
             result <= 'h0;
             valid  <= 'h0;
-        end 
-        else begin
-            case(i) 
-            2'd0: begin // Idle State
-                i <= count == 6 ? 2'd1 : 2'd0;
-                io_out[8] <= 'h0;
-                end
-            2'd1:	begin // Decides which result should be taken based on the select signal.
-                    result <=  select ? temp_result_add : temp_result_mul;
-                    valid <= select ? temp_valid_add : temp_valid_mul;
-                    i <= 2'd2;
-                end
-            2'd2:   begin // Assigns 8 bits starting from LSB to the output port
-                    io_out[7:0] <= result[7:0];
-                    io_out[8] <= valid;
-                    count <=1;
-                    i <= 2'd3;
-                end
-            2'd3:	begin // Assigning the next 8 bits to the output port.
-                    io_out[7:0] <= result[15:8];
-                    i <= 2'd0;
-                end
-            default: i <= 2'd0;
-            endcase
         end
     end
   //Adder and Multiplier Modules
