@@ -129,6 +129,7 @@ module add(input_a, input_b, add_out,add_valid);
         5'h14: {shift_1,shift_ext} = min_diff[10:9];
         5'h15: {shift_1,shift_ext} = min_diff[10];
         5'h16: {shift_1,shift_ext} = 0;
+        default: shift_1 = min_diff;
       endcase
     end
 
