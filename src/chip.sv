@@ -64,6 +64,12 @@ assign select = io_in[8];
                 j <= (4*count) -1;
             end
         end
+        else begin 
+            tmp_input_A <= 0;
+            tmp_input_B <= 0;
+            count <= 1;
+            j <= 0;
+        end
         // Output Controls.
         if(reset) begin
             i <= 0;
